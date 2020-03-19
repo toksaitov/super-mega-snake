@@ -19,6 +19,32 @@
     <body>
         <canvas id="canvas"></canvas>
         <script>
+            // Field State
+            const fieldWidth = 20;
+            const fieldHeight = 20;
+            const fieldColor = 'white';
+
+            // Field Behaviour
+            function drawField(ctx, w, h) {
+                const cellSize = Math.min(w / fieldWidth, h / fieldHeight);
+                const fieldPixelWidth = cellSize * fieldWidth;
+                const fieldPixelHeight = cellSize * fieldHeight;
+                const centeringShiftX = (w - fieldPixelWidth) / 2;
+                const centeringShiftY = (h - fieldPixelHeight) / 2;
+
+                ctx.fillStyle = fieldColor;
+                for (let y = 0; y < fieldHeight; ++y) {
+                    for (let x = 0; x < fieldWidth; ++x) {
+                        const pixelX = centeringShiftX + x * cellSize;
+                        const pixelY = centeringShiftY + y * cellSize;
+
+                        ctx.beginPath();
+                        ctx.rect(pixelX, pixelY, cellSize - 1, cellSize - 1);
+                        ctx.fill();
+                    }
+                }
+            }
+
             function setup(ctx, w, h) {
                 // TODO: добавить код инициализации
 
@@ -36,9 +62,9 @@
                 ctx.rect(0, 0, w, h);
                 ctx.fill();
 
-                // TODO: добавить код рисования
+                drawField(ctx, w, h);
 
-                window.requestAnimationFrame(timestamp => draw(ctx, w, h, timestamp));
+                //window.requestAnimationFrame(timestamp => draw(ctx, w, h, timestamp));
             }
 
             function keyDown(key) {
