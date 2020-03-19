@@ -19,12 +19,12 @@
     <body>
         <canvas id="canvas"></canvas>
         <script>
-            // Field State
+            // Field's State
             const fieldWidth = 20;
             const fieldHeight = 20;
             const fieldColor = 'white';
 
-            // Field Behaviour
+            // Field's Behaviour
             function drawField(ctx, w, h) {
                 const cellSize = Math.min(w / fieldWidth, h / fieldHeight);
                 const fieldPixelWidth = cellSize * fieldWidth;
@@ -45,8 +45,35 @@
                 }
             }
 
+            // Apple's Variables
+            let appleX;
+            let appleY;
+            const appleColor = 'red';
+
+            // Apple's Behaviour
+            function constructApple() {
+                appleX = Math.trunc(Math.random() * fieldWidth);
+                appleY = Math.trunc(Math.random() * fieldHeight);
+            }
+
+            function drawApple(ctx, w, h) {
+                const cellSize = Math.min(w / fieldWidth, h / fieldHeight);
+                const fieldPixelWidth = cellSize * fieldWidth;
+                const fieldPixelHeight = cellSize * fieldHeight;
+                const centeringShiftX = (w - fieldPixelWidth) / 2;
+                const centeringShiftY = (h - fieldPixelHeight) / 2;
+
+                ctx.fillStyle = appleColor;
+                const pixelX = centeringShiftX + appleX * cellSize;
+                const pixelY = centeringShiftY + appleY * cellSize;
+
+                ctx.beginPath();
+                ctx.rect(pixelX, pixelY, cellSize - 1, cellSize - 1);
+                ctx.fill();
+            }
+
             function setup(ctx, w, h) {
-                // TODO: добавить код инициализации
+                constructApple();
 
                 window.requestAnimationFrame(timestamp => draw(ctx, w, h, timestamp));
             }
@@ -63,6 +90,7 @@
                 ctx.fill();
 
                 drawField(ctx, w, h);
+                drawApple(ctx, w, h);
 
                 //window.requestAnimationFrame(timestamp => draw(ctx, w, h, timestamp));
             }
