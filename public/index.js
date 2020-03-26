@@ -1,5 +1,7 @@
 import {
-    recalcDrawingSizes
+    centeringShiftX,
+    fieldPixelWidth,
+    recalcDrawingSizes,
 } from './drawingHelpers.js';
 
 import Field from './field.js';
@@ -7,72 +9,87 @@ import Apple from './apple.js';
 import Snake from './snake.js';
 
 const field = new Field();
-const snake1 = new Snake();
-const snake2 = new Snake();
-let apple = new Apple(field, [snake1, snake2]);
+const snake1 = new Snake({
+    'x': 0, 'y': 0,
+    'dx': 1, 'dy': 0
+});
+const snake2 = new Snake({
+    'x': field.width - 1,
+    'y': field.height - 1,
+    'dx': -1, 'dy': 0
+});
+const snakes = [snake1, snake2];
+let apple = new Apple(field, snakes);
 
 function setup(ctx, w, h) {
-    window.requestAnimationFrame(timestamp => draw(ctx, w, h, timestamp));
+    window.requestAnimationFrame(() => draw(ctx, w, h));
 }
 
-function draw(ctx, w, h, timestamp) {
+function draw(ctx, w, h) {
     if (w != window.innerWidth || h != window.innerHeight) {
         w = canvas.width  = window.innerWidth;
         h = canvas.height = window.innerHeight;
     }
+
+    recalcDrawingSizes(w, h, field);
 
     ctx.fillStyle = 'black';
     ctx.beginPath();
     ctx.rect(0, 0, w, h);
     ctx.fill();
 
-    recalcDrawingSizes(w, h, field);
+    const onHaveEatenApple = () => {
+        apple = new Apple(field, snakes);
+    }
+    snake1.move(field, apple, snakes, onHaveEatenApple);
+    snake2.move(field, apple, snakes, onHaveEatenApple);
 
-    snake1.moveSnake(field, apple, () => {
-        apple = new Apple(field, [snake1, snake2]);
-    });
-    snake2.moveSnake(field, apple, () => {
-        apple = new Apple(field, [snake1, snake2]);
-    });
+    field.draw(ctx);
+    apple.draw(ctx);
+    snake1.draw(ctx);
+    snake2.draw(ctx);
 
-    field.drawField(ctx, w, h);
-    apple.drawApple(ctx, w, h);
-    snake1.drawSnake(ctx, w, h);
-    snake2.drawSnake(ctx, w, h);
-    //snake.drawSnakeScore(ctx, w, h);
+    const topScoreMargin = h * 0.085;
+    const leftScoreMargin = centeringShiftX + w * 0.01;
+    const rightScoreMargin = centeringShiftX + fieldPixelWidth - w * 0.01;
+    snake1.drawScore(ctx, leftScoreMargin, topScoreMargin);
+    snake2.drawScore(ctx, rightScoreMargin, topScoreMargin);
 
-    window.requestAnimationFrame(timestamp => draw(ctx, w, h, timestamp));
+    window.requestAnimationFrame(() => draw(ctx, w, h));
 }
 
 function keyDown(key) {
     switch (key) {
         case 'w':
         case 'W':
-            snake1.turnSnakeUp();
+            snake1.turnUp();
             break;
         case 'a':
         case 'A':
-            snake1.turnSnakeLeft();
+            snake1.turnLeft();
             break;
         case 's':
         case 'S':
-            snake1.turnSnakeDown();
+            snake1.turnDown();
             break;
         case 'd':
         case 'D':
-            snake1.turnSnakeRight();
+            snake1.turnRight();
             break;
+    }
+
+    switch (key) {
         case 'ArrowUp':
-            snake2.turnSnakeUp();
+            snake2.turnUp();
             break;
         case 'ArrowLeft':
-            snake2.turnSnakeLeft();
+            snake2.turnLeft();
             break;
         case 'ArrowDown':
-            snake2.turnSnakeDown();
+            snake2.turnDown();
             break;
         case 'ArrowRight':
-            snake2.turnSnakeRight();
+            snake2.turnRight();
             break;
     }
 }

@@ -8,22 +8,30 @@ export default class Apple {
     // Apple's Behaviour
     constructor(field, snakes) {
         // Apple's State
-        this.appleColor = 'red';
+        this.color = 'red';
 
-        //do {
-            this.appleX = Math.trunc(Math.random() * field.fieldWidth);
-            this.appleY = Math.trunc(Math.random() * field.fieldHeight);
-        //} while (snake.isCollidingWithSnake(this.appleX, this.appleY));
+        const isCollidingWithSnakes = (x, y, snakes) => {
+            for (const snake of snakes) {
+                if (snake.isCollidingWith(x, y)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        do {
+            this.x = Math.trunc(Math.random() * field.width);
+            this.y = Math.trunc(Math.random() * field.height);
+        } while (isCollidingWithSnakes(this.x, this.y, snakes));
     }
 
-    isCollidingWithApple(x, y) {
-        return x === this.appleX && y === this.appleY;
+    isCollidingWith(x, y) {
+        return x === this.x && y === this.y;
     }
 
-    drawApple(ctx, w, h) {
-        ctx.fillStyle = this.appleColor;
-        const pixelX = centeringShiftX + this.appleX * cellSize;
-        const pixelY = centeringShiftY + this.appleY * cellSize;
+    draw(ctx) {
+        ctx.fillStyle = this.color;
+        const pixelX = centeringShiftX + this.x * cellSize;
+        const pixelY = centeringShiftY + this.y * cellSize;
 
         ctx.beginPath();
         ctx.rect(pixelX, pixelY, cellSize - 1, cellSize - 1);

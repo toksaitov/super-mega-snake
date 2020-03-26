@@ -8,20 +8,20 @@ export default class Field {
     // Field's Behaviour
     constructor() {
         // Field's State
-        this.fieldWidth = 40;
-        this.fieldHeight = 40;
-        this.fieldColor = 'white';
-    }
-    
-    areCoordsInsideField(x, y) {
-        return x >= 0 && x < this.fieldWidth &&
-               y >= 0 && y < this.fieldHeight;
+        this.width = 40;
+        this.height = 40;
+        this.color = 'white';
     }
 
-    drawField(ctx, w, h) {
-        ctx.fillStyle = this.fieldColor;
-        for (let y = 0; y < this.fieldHeight; ++y) {
-            for (let x = 0; x < this.fieldWidth; ++x) {
+    areCoordsInside(x, y) {
+        return x >= 0 && x < this.width &&
+               y >= 0 && y < this.height;
+    }
+
+    draw(ctx) {
+        ctx.fillStyle = this.color;
+        for (let y = 0; y < this.height; ++y) {
+            for (let x = 0; x < this.width; ++x) {
                 const pixelX = centeringShiftX + x * cellSize;
                 const pixelY = centeringShiftY + y * cellSize;
 

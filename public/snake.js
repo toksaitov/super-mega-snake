@@ -6,65 +6,62 @@ import {
 
 export default class Snake {
     // Snake's Behaviour
-    constructor() {
+    constructor(params, initialLength = 5) {
         // Snake's State
-        this.snakeStartX = 0;
-        this.snakeStartY = 0;
-        this.snakeNormalColor = 'blue';
-        this.snakeDeadColor = 'gray';
+        this.normalColor = 'blue';
+        this.deadColor = 'gray';
 
-        this.snakeBody = [];
-        this.snakeLength = 5;
-        this.snakeHead = this.snakeLength - 1;
-        this.snakeDX = 1;
-        this.snakeDY = 0;
-        this.snakeDead = false;
-        this.snakeScore = 0;
-        this.snakeSpeed = 55; // [1..60]
-        this.snakeMoveRequest = 0;
-        this.snakeMoveRequestDiv = Math.max(60 - this.snakeSpeed, 1);
-        this.snakeColor = this.snakeNormalColor;
-        this.snakeScoreFont = 'sans-serif';
-        this.snakeScoreColor = 'white';
+        this.head = 0;
+        this.dx = params.dx || 1;
+        this.dy = params.dy || 0;
+        this.dead = false;
+        this.score = 0;
+        this.speed = 52; // [1..60]
+        this.moveRequest = 0;
+        this.moveRequestDiv = Math.max(60 - this.speed, 1);
+        this.color = this.normalColor;
+        this.scoreFont = 'sans-serif';
+        this.scoreColor = 'white';
 
-        for (let i = 0; i < this.snakeLength; i++) {
-            this.snakeBody.push({
-                x: this.snakeStartX,
-                y: this.snakeStartY,
-            });
+        this.body = [];
+        for (let i = 0; i < initialLength; i++) {
+            this.body.push({
+                'x': params.x || 0,
+                'y': params.y || 0
+             });
         }
     }
 
-    turnSnakeUp() {
-        if (this.snakeDY !== 1) {
-            this.snakeDX = 0;
-            this.snakeDY = -1;
+    turnUp() {
+        if (this.dy !== 1) {
+            this.dx = 0;
+            this.dy = -1;
         }
     }
 
-    turnSnakeDown() {
-        if (this.snakeDY !== -1) {
-            this.snakeDX = 0;
-            this.snakeDY = 1;
+    turnDown() {
+        if (this.dy !== -1) {
+            this.dx = 0;
+            this.dy = 1;
         }
     }
 
-    turnSnakeLeft() {
-        if (this.snakeDX !== 1) {
-            this.snakeDX = -1;
-            this.snakeDY = 0;
+    turnLeft() {
+        if (this.dx !== 1) {
+            this.dx = -1;
+            this.dy = 0;
         }
     }
 
-    turnSnakeRight() {
-        if (this.snakeDX !== -1) {
-            this.snakeDX = 1;
-            this.snakeDY = 0;
+    turnRight() {
+        if (this.dx !== -1) {
+            this.dx = 1;
+            this.dy = 0;
         }
     }
 
-    isCollidingWithSnake(x, y) {
-        for (const segment of this.snakeBody) {
+    isCollidingWith(x, y) {
+        for (const segment of this.body) {
             if (segment.x === x && segment.y === y) {
                 return true;
             } 
@@ -72,29 +69,54 @@ export default class Snake {
         return false;
     }
 
-    moveSnake(field, apple, onHaveEatenApple) {
-        if (this.snakeDead) { return; }
-        if (this.snakeMoveRequest++ % this.snakeMoveRequestDiv !== 0) { return; }
+    isCollidingWithSnakes(snakes) {
+        const headSegment = this.body[this.head];
+        const x = headSegment.x;
+        const y = headSegment.y;
 
-        const headSegment = this.snakeBody[this.snakeHead];
+        for (const snake of snakes) {
+            if (this === snake) {
+                continue;
+            }
+            if (snake.isCollidingWith(x, y)) {
+                return snake;
+            }
+        }
+        return null;
+    }
 
-        const nextX = headSegment.x + this.snakeDX;
-        const nextY = headSegment.y + this.snakeDY;
+    die() {
+        this.dead = true;
+        this.color = this.deadColor;
+    }
 
-        if (!field.areCoordsInsideField(nextX, nextY) ||
-             this.isCollidingWithSnake(nextX, nextY)) {
-            this.snakeDead = true;
-            this.snakeColor = this.snakeDeadColor;
+    move(field, apple, snakes, onHaveEatenApple) {
+        if (this.dead) { return; }
+        if (this.moveRequest++ % this.moveRequestDiv !== 0) { return; }
+
+        const headSegment = this.body[this.head];
+
+        const nextX = headSegment.x + this.dx;
+        const nextY = headSegment.y + this.dy;
+
+        if (!field.areCoordsInside(nextX, nextY) ||
+             this.isCollidingWith(nextX, nextY)) {
+            this.die();
             return;
         }
 
-        this.snakeHead = (this.snakeHead + 1) % this.snakeLength;
-        const nextHeadSegment = this.snakeBody[this.snakeHead];
+        let otherSnake;
+        if (otherSnake = this.isCollidingWithSnakes(snakes)) {
+            this.die(); otherSnake.die();
+            return;
+        }
 
-        if (apple.isCollidingWithApple(nextX, nextY))  {
-            this.snakeScore++;
-            this.snakeLength++;
-            this.snakeBody.splice(this.snakeHead, 0, {
+        this.head = (this.head + 1) % this.body.length;
+        const nextHeadSegment = this.body[this.head];
+
+        if (apple.isCollidingWith(nextX, nextY))  {
+            this.score++;
+            this.body.splice(this.head, 0, {
                 'x': nextX,
                 'y': nextY
             });
@@ -106,9 +128,9 @@ export default class Snake {
         }
     }
 
-    drawSnake(ctx, w, h) {
-        ctx.fillStyle = this.snakeColor;
-        for (const segment of this.snakeBody) {
+    draw(ctx) {
+        ctx.fillStyle = this.color;
+        for (const segment of this.body) {
             const pixelX = centeringShiftX + segment.x * cellSize;
             const pixelY = centeringShiftY + segment.y * cellSize;
 
@@ -118,10 +140,10 @@ export default class Snake {
         }
     }
 
-    drawSnakeScore(ctx, w, h) {
-        ctx.fillStyle = this.snakeScoreColor;
+    drawScore(ctx, x, y) {
+        ctx.fillStyle = this.scoreColor;
         ctx.textAlign = 'center';
-        ctx.font = `${cellSize * 3.4}px ${this.snakeScoreFont}`;
-        ctx.fillText(this.snakeScore, w / 2, h * 0.085);
+        ctx.font = `${cellSize * 3.4}px ${this.scoreFont}`;
+        ctx.fillText(this.score, x, y);
     }
 }
