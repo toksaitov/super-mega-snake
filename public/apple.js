@@ -1,41 +1,32 @@
 import {
-    fieldWidth,
-    fieldHeight
-} from './field.js';
-
-import {
     cellSize,
     centeringShiftX,
     centeringShiftY
 } from './drawingHelpers.js';
 
-import {
-    isCollidingWithSnake
-} from './snake.js';
+export default class Apple {
+    // Apple's Behaviour
+    constructor(field, snakes) {
+        // Apple's State
+        this.appleColor = 'red';
 
-// Apple's Variables
-let appleX;
-let appleY;
-const appleColor = 'red';
+        //do {
+            this.appleX = Math.trunc(Math.random() * field.fieldWidth);
+            this.appleY = Math.trunc(Math.random() * field.fieldHeight);
+        //} while (snake.isCollidingWithSnake(this.appleX, this.appleY));
+    }
 
-// Apple's Behaviour
-export function constructApple(snake) {
-    do {
-        appleX = Math.trunc(Math.random() * fieldWidth);
-        appleY = Math.trunc(Math.random() * fieldHeight);
-    } while (isCollidingWithSnake(appleX, appleY));
-}
+    isCollidingWithApple(x, y) {
+        return x === this.appleX && y === this.appleY;
+    }
 
-export function isCollidingWithApple(x, y) {
-    return x === appleX && y === appleY;
-}
+    drawApple(ctx, w, h) {
+        ctx.fillStyle = this.appleColor;
+        const pixelX = centeringShiftX + this.appleX * cellSize;
+        const pixelY = centeringShiftY + this.appleY * cellSize;
 
-export function drawApple(ctx, w, h) {
-    ctx.fillStyle = appleColor;
-    const pixelX = centeringShiftX + appleX * cellSize;
-    const pixelY = centeringShiftY + appleY * cellSize;
-
-    ctx.beginPath();
-    ctx.rect(pixelX, pixelY, cellSize - 1, cellSize - 1);
-    ctx.fill();
+        ctx.beginPath();
+        ctx.rect(pixelX, pixelY, cellSize - 1, cellSize - 1);
+        ctx.fill();
+    }
 }

@@ -4,27 +4,31 @@ import {
     centeringShiftY
 } from './drawingHelpers.js';
 
-// Field's State
-export const fieldWidth = 40;
-export const fieldHeight = 40;
-const fieldColor = 'white';
+export default class Field {
+    // Field's Behaviour
+    constructor() {
+        // Field's State
+        this.fieldWidth = 40;
+        this.fieldHeight = 40;
+        this.fieldColor = 'white';
+    }
+    
+    areCoordsInsideField(x, y) {
+        return x >= 0 && x < this.fieldWidth &&
+               y >= 0 && y < this.fieldHeight;
+    }
 
-// Field's Behaviour
-export function areCoordsInsideField(x, y) {
-    return x >= 0 && x < fieldWidth &&
-           y >= 0 && y < fieldHeight;
-}
+    drawField(ctx, w, h) {
+        ctx.fillStyle = this.fieldColor;
+        for (let y = 0; y < this.fieldHeight; ++y) {
+            for (let x = 0; x < this.fieldWidth; ++x) {
+                const pixelX = centeringShiftX + x * cellSize;
+                const pixelY = centeringShiftY + y * cellSize;
 
-export function drawField(ctx, w, h) {
-    ctx.fillStyle = fieldColor;
-    for (let y = 0; y < fieldHeight; ++y) {
-        for (let x = 0; x < fieldWidth; ++x) {
-            const pixelX = centeringShiftX + x * cellSize;
-            const pixelY = centeringShiftY + y * cellSize;
-
-            ctx.beginPath();
-            ctx.rect(pixelX, pixelY, cellSize - 1, cellSize - 1);
-            ctx.fill();
+                ctx.beginPath();
+                ctx.rect(pixelX, pixelY, cellSize - 1, cellSize - 1);
+                ctx.fill();
+            }
         }
     }
 }
