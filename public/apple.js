@@ -8,7 +8,7 @@ export default class Apple {
     // Apple's Behaviour
     constructor(field, snakes) {
         // Apple's State
-        this.color = 'red';
+        this._color = 'red';
 
         const isCollidingWithSnakes = (x, y, snakes) => {
             for (const snake of snakes) {
@@ -19,19 +19,19 @@ export default class Apple {
             return false;
         }
         do {
-            this.x = Math.trunc(Math.random() * field.width);
-            this.y = Math.trunc(Math.random() * field.height);
-        } while (isCollidingWithSnakes(this.x, this.y, snakes));
+            this._x = Math.trunc(Math.random() * field.width);
+            this._y = Math.trunc(Math.random() * field.height);
+        } while (isCollidingWithSnakes(this._x, this._y, snakes));
     }
 
     isCollidingWith(x, y) {
-        return x === this.x && y === this.y;
+        return x === this._x && y === this._y;
     }
 
     draw(ctx) {
-        ctx.fillStyle = this.color;
-        const pixelX = centeringShiftX + this.x * cellSize;
-        const pixelY = centeringShiftY + this.y * cellSize;
+        ctx.fillStyle = this._color;
+        const pixelX = centeringShiftX + this._x * cellSize;
+        const pixelY = centeringShiftY + this._y * cellSize;
 
         ctx.beginPath();
         ctx.rect(pixelX, pixelY, cellSize - 1, cellSize - 1);

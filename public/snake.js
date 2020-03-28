@@ -8,24 +8,24 @@ export default class Snake {
     // Snake's Behaviour
     constructor(params, initialLength = 5) {
         // Snake's State
-        this.normalColor = 'blue';
-        this.deadColor = 'gray';
+        this._normalColor = 'blue';
+        this._deadColor = 'gray';
 
-        this.head = 0;
-        this.dx = params.dx || 1;
-        this.dy = params.dy || 0;
-        this.dead = false;
-        this.score = 0;
-        this.speed = 52; // [1..60]
-        this.moveRequest = 0;
-        this.moveRequestDiv = Math.max(60 - this.speed, 1);
-        this.color = this.normalColor;
-        this.scoreFont = 'sans-serif';
-        this.scoreColor = 'white';
+        this._head = 0;
+        this._dx = params.dx || 1;
+        this._dy = params.dy || 0;
+        this._dead = false;
+        this._score = 0;
+        this._speed = 52; // [1..60]
+        this._moveRequest = 0;
+        this._moveRequestDiv = Math.max(60 - this._speed, 1);
+        this._color = this._normalColor;
+        this._scoreFont = 'sans-serif';
+        this._scoreColor = 'white';
 
-        this.body = [];
+        this._body = [];
         for (let i = 0; i < initialLength; i++) {
-            this.body.push({
+            this._body.push({
                 'x': params.x || 0,
                 'y': params.y || 0
              });
@@ -33,35 +33,35 @@ export default class Snake {
     }
 
     turnUp() {
-        if (this.dy !== 1) {
-            this.dx = 0;
-            this.dy = -1;
+        if (this._dy !== 1) {
+            this._dx = 0;
+            this._dy = -1;
         }
     }
 
     turnDown() {
-        if (this.dy !== -1) {
-            this.dx = 0;
-            this.dy = 1;
+        if (this._dy !== -1) {
+            this._dx = 0;
+            this._dy = 1;
         }
     }
 
     turnLeft() {
-        if (this.dx !== 1) {
-            this.dx = -1;
-            this.dy = 0;
+        if (this._dx !== 1) {
+            this._dx = -1;
+            this._dy = 0;
         }
     }
 
     turnRight() {
-        if (this.dx !== -1) {
-            this.dx = 1;
-            this.dy = 0;
+        if (this._dx !== -1) {
+            this._dx = 1;
+            this._dy = 0;
         }
     }
 
     isCollidingWith(x, y) {
-        for (const segment of this.body) {
+        for (const segment of this._body) {
             if (segment.x === x && segment.y === y) {
                 return true;
             } 
@@ -69,8 +69,8 @@ export default class Snake {
         return false;
     }
 
-    isCollidingWithSnakes(snakes) {
-        const headSegment = this.body[this.head];
+    _isCollidingWithSnakes(snakes) {
+        const headSegment = this._body[this._head];
         const x = headSegment.x;
         const y = headSegment.y;
 
@@ -86,18 +86,18 @@ export default class Snake {
     }
 
     die() {
-        this.dead = true;
-        this.color = this.deadColor;
+        this._dead = true;
+        this._color = this._deadColor;
     }
 
     move(field, apple, snakes, onHaveEatenApple) {
-        if (this.dead) { return; }
-        if (this.moveRequest++ % this.moveRequestDiv !== 0) { return; }
+        if (this._dead) { return; }
+        if (this._moveRequest++ % this._moveRequestDiv !== 0) { return; }
 
-        const headSegment = this.body[this.head];
+        const headSegment = this._body[this._head];
 
-        const nextX = headSegment.x + this.dx;
-        const nextY = headSegment.y + this.dy;
+        const nextX = headSegment.x + this._dx;
+        const nextY = headSegment.y + this._dy;
 
         if (!field.areCoordsInside(nextX, nextY) ||
              this.isCollidingWith(nextX, nextY)) {
@@ -106,17 +106,17 @@ export default class Snake {
         }
 
         let otherSnake;
-        if (otherSnake = this.isCollidingWithSnakes(snakes)) {
+        if (otherSnake = this._isCollidingWithSnakes(snakes)) {
             this.die(); otherSnake.die();
             return;
         }
 
-        this.head = (this.head + 1) % this.body.length;
-        const nextHeadSegment = this.body[this.head];
+        this._head = (this._head + 1) % this._body.length;
+        const nextHeadSegment = this._body[this._head];
 
         if (apple.isCollidingWith(nextX, nextY))  {
-            this.score++;
-            this.body.splice(this.head, 0, {
+            this._score++;
+            this._body.splice(this._head, 0, {
                 'x': nextX,
                 'y': nextY
             });
@@ -129,8 +129,8 @@ export default class Snake {
     }
 
     draw(ctx) {
-        ctx.fillStyle = this.color;
-        for (const segment of this.body) {
+        ctx.fillStyle = this._color;
+        for (const segment of this._body) {
             const pixelX = centeringShiftX + segment.x * cellSize;
             const pixelY = centeringShiftY + segment.y * cellSize;
 
@@ -141,9 +141,9 @@ export default class Snake {
     }
 
     drawScore(ctx, x, y) {
-        ctx.fillStyle = this.scoreColor;
+        ctx.fillStyle = this._scoreColor;
         ctx.textAlign = 'center';
-        ctx.font = `${cellSize * 3.4}px ${this.scoreFont}`;
-        ctx.fillText(this.score, x, y);
+        ctx.font = `${cellSize * 3.4}px ${this._scoreFont}`;
+        ctx.fillText(this._score, x, y);
     }
 }
