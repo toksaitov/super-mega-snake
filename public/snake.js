@@ -8,9 +8,10 @@ export default class Snake {
     // Snake's Behaviour
     constructor(params, initialLength = 5) {
         // Snake's State
-        this._normalColor = 'blue';
+        this._normalColor = params.color || 'blue';
         this._deadColor = 'gray';
 
+        this._name = params.name || 'Snake';
         this._head = 0;
         this._dx = params.dx || 1;
         this._dy = params.dy || 0;
@@ -29,6 +30,27 @@ export default class Snake {
                 'x': params.x || 0,
                 'y': params.y || 0
              });
+        }
+    }
+
+    get name() {
+        return this._name;
+    }
+
+    get color() {
+        return this._normalColor;
+    }
+
+    get dead() {
+        return this._dead;
+    }
+
+    set dead(value) {
+        this._dead = value;
+        if (this._dead) {
+            this._color = this._deadColor;
+        } else {
+            this._color = this._normalColor;
         }
     }
 
@@ -85,11 +107,6 @@ export default class Snake {
         return null;
     }
 
-    die() {
-        this._dead = true;
-        this._color = this._deadColor;
-    }
-
     move(field, apple, snakes, onHaveEatenApple) {
         if (this._dead) { return; }
         if (this._moveRequest++ % this._moveRequestDiv !== 0) { return; }
@@ -101,13 +118,13 @@ export default class Snake {
 
         if (!field.areCoordsInside(nextX, nextY) ||
              this.isCollidingWith(nextX, nextY)) {
-            this.die();
+            this.dead = true;
             return;
         }
 
         let otherSnake;
         if (otherSnake = this._isCollidingWithSnakes(snakes)) {
-            this.die(); otherSnake.die();
+            this.dead = true; otherSnake.dead = true;
             return;
         }
 
