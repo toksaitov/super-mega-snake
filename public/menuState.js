@@ -3,8 +3,15 @@ import {
     LocalMultiPlayerGameState
 } from "./gameState.js";
 
-export default class MenuState {
+import State from "./state.js";
+
+export default class MenuState extends State {
     constructor() {
+        super({
+            '1': changeState => changeState(new SinglePlayerGameState()),
+            '2': changeState => changeState(new LocalMultiPlayerGameState())
+        });
+
         this._titleFontSize = 70;
         this._menuItemsFontSize = 20;
         this._menuVerticalShift = 60;
@@ -12,13 +19,10 @@ export default class MenuState {
     }
 
     draw(ctx, w, h) {
+        super.draw(ctx, w, h);
+
         const x = w / 2;
         const y = h / 2;
-
-        ctx.fillStyle = 'black';
-        ctx.beginPath();
-        ctx.rect(0, 0, w, h);
-        ctx.fill();
 
         // Game Title 
         ctx.textAlign = 'center';
@@ -49,14 +53,6 @@ export default class MenuState {
             'right':  menuTwoX + menuMessageTwo.length * this._menuItemsFontSize * 0.45 / 2,
             'top':    menuTwoY - this._menuItemsFontSize * 1.4 / 2,
             'bottom': menuTwoY + this._menuItemsFontSize * 1.4 / 2
-        }
-    }
-
-    keyDown(key, changeState) {
-        if (key === '1') {
-            changeState(new SinglePlayerGameState());
-        } else if (key === '2') {
-            changeState(new LocalMultiPlayerGameState());
         }
     }
 

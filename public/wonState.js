@@ -1,7 +1,12 @@
+import State from './state.js';
 import MenuState from "./menuState.js";
 
-export default class WonState {
+export default class WonState extends State {
     constructor(winnerName, winnerColor) {
+        super({
+            'enter': changeState => changeState(new MenuState())
+        });
+
         this._winnerName = winnerName;
         this._winnerColor = winnerColor;
         this._titleFontSize = 70;
@@ -11,13 +16,10 @@ export default class WonState {
     }
 
     draw(ctx, w, h) {
+        super.draw(ctx, w, h);
+
         const x = w / 2;
         const y = h / 2;
-
-        ctx.fillStyle = 'black';
-        ctx.beginPath();
-        ctx.rect(0, 0, w, h);
-        ctx.fill();
 
         // Message 
         ctx.textAlign = 'center';
@@ -38,12 +40,6 @@ export default class WonState {
             'top':    menuOneY - this._menuItemsFontSize * 1.4 / 2,
             'bottom': menuOneY + this._menuItemsFontSize * 1.4 / 2
         };
-    }
-
-    keyDown(key, changeState) {
-        if (key === 'Enter') {
-            changeState(new MenuState());
-        }
     }
 
     click(x, y, changeState) {

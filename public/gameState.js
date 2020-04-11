@@ -1,19 +1,28 @@
 import {
     recalcDrawingSizes,
     centeringShiftX,
-    fieldPixelWidth 
+    fieldPixelWidth
 } from './drawingHelpers.js';
 
 import Field from './field.js';
 import Apple from './apple.js';
 import Snake from './snake.js';
 
+import State from './state.js';
 import PauseState from './pauseState.js';
 import LostState from './lostState.js';
 import WonState from './wonState.js';
 
-export class SinglePlayerGameState {
+export class SinglePlayerGameState extends State {
     constructor() {
+        super({
+            'w': () => this._snake.turnUp(),
+            'a': () => this._snake.turnLeft(),
+            's': () => this._snake.turnDown(),
+            'd': () => this._snake.turnRight(),
+            'escape': changeState => changeState(new PauseState(this))
+        });
+
         this._field = new Field();
         this._snake = new Snake({
             'x': 0, 'y': 0,
@@ -24,12 +33,8 @@ export class SinglePlayerGameState {
     }
 
     draw(ctx, w, h, changeState, shouldSimulate) {
+        super.draw(ctx, w, h);
         recalcDrawingSizes(w, h, this._field);
-
-        ctx.fillStyle = 'black';
-        ctx.beginPath();
-        ctx.rect(0, 0, w, h);
-        ctx.fill();
     
         if (shouldSimulate) {
             this._snake.move(this._field, this._apple, this._snakes, () => {
@@ -50,35 +55,23 @@ export class SinglePlayerGameState {
         this._snake.drawScore(ctx, w / 2, topScoreMargin);
     }
 
-    keyDown(key, changeState) {
-        switch (key) {
-            case 'w':
-            case 'W':
-                this._snake.turnUp();
-                break;
-            case 'a':
-            case 'A':
-                this._snake.turnLeft();
-                break;
-            case 's':
-            case 'S':
-                this._snake.turnDown();
-                break;
-            case 'd':
-            case 'D':
-                this._snake.turnRight();
-                break;
-            case 'Escape':
-                changeState(new PauseState(this));
-                break;
-        }
-    }
-
     click(x, y) {}
 }
 
-export class LocalMultiPlayerGameState {
+export class LocalMultiPlayerGameState extends State {
     constructor() {
+        super({
+            'w': () => this._snake1.turnUp(),
+            'a': () => this._snake1.turnLeft(),
+            's': () => this._snake1.turnDown(),
+            'd': () => this._snake1.turnRight(),
+            'arrowup':    () => this._snake2.turnUp(),
+            'arrowleft':  () => this._snake2.turnLeft(),
+            'arrowdown':  () => this._snake2.turnDown(),
+            'arrowright': () => this._snake2.turnRight(),
+            'escape': changeState => changeState(new PauseState(this))
+        });
+
         this._field = new Field();
         this._snake1 = new Snake({
             'name': 'Red snake',
@@ -98,13 +91,10 @@ export class LocalMultiPlayerGameState {
     }
 
     draw(ctx, w, h, changeState, shouldSimulate) {
+        super.draw(ctx, w, h);
+
         recalcDrawingSizes(w, h, this._field);
 
-        ctx.fillStyle = 'black';
-        ctx.beginPath();
-        ctx.rect(0, 0, w, h);
-        ctx.fill();
-    
         if (shouldSimulate) {
             const onHaveEatenApple = () => {
                 this._apple = new Apple(this._field, this._snakes);
@@ -136,42 +126,6 @@ export class LocalMultiPlayerGameState {
         const rightScoreMargin = centeringShiftX + fieldPixelWidth - w * 0.01;
         this._snake1.drawScore(ctx, leftScoreMargin, topScoreMargin);
         this._snake2.drawScore(ctx, rightScoreMargin, topScoreMargin);    
-    }
-
-    keyDown(key, changeState) {
-        switch (key) {
-            case 'w':
-            case 'W':
-                this._snake1.turnUp();
-                break;
-            case 'a':
-            case 'A':
-                this._snake1.turnLeft();
-                break;
-            case 's':
-            case 'S':
-                this._snake1.turnDown();
-                break;
-            case 'd':
-            case 'D':
-                this._snake1.turnRight();
-                break;
-            case 'ArrowUp':
-                this._snake2.turnUp();
-                break;
-            case 'ArrowLeft':
-                this._snake2.turnLeft();
-                break;
-            case 'ArrowDown':
-                this._snake2.turnDown();
-                break;
-            case 'ArrowRight':
-                this._snake2.turnRight();
-                break;
-            case 'Escape':
-                changeState(new PauseState(this));
-                break;
-        }
     }
 
     click(x, y) {}

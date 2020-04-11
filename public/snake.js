@@ -1,7 +1,8 @@
 import {
     cellSize,
     centeringShiftX,
-    centeringShiftY
+    centeringShiftY,
+    fillRect
 } from './drawingHelpers.js';
 
 export default class Snake {
@@ -146,14 +147,10 @@ export default class Snake {
     }
 
     draw(ctx) {
-        ctx.fillStyle = this._color;
         for (const segment of this._body) {
             const pixelX = centeringShiftX + segment.x * cellSize;
             const pixelY = centeringShiftY + segment.y * cellSize;
-
-            ctx.beginPath();
-            ctx.rect(pixelX, pixelY, cellSize - 1, cellSize - 1);
-            ctx.fill();
+            fillRect(ctx, pixelX, pixelY, cellSize - 1, cellSize - 1, this._color);
         }
     }
 

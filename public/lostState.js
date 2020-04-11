@@ -1,7 +1,12 @@
+import State from './state.js';
 import MenuState from "./menuState.js";
 
-export default class LostState {
+export default class LostState extends State {
     constructor() {
+        super({
+            'enter': changeState => changeState(new MenuState())
+        });
+
         this._titleFontSize = 70;
         this._menuItemsFontSize = 20;
         this._menuVerticalShift = 60;
@@ -9,13 +14,10 @@ export default class LostState {
     }
 
     draw(ctx, w, h) {
+        super.draw(ctx, w, h);
+
         const x = w / 2;
         const y = h / 2;
-
-        ctx.fillStyle = 'black';
-        ctx.beginPath();
-        ctx.rect(0, 0, w, h);
-        ctx.fill();
 
         // Message 
         ctx.textAlign = 'center';
@@ -36,12 +38,6 @@ export default class LostState {
             'top':    menuOneY - this._menuItemsFontSize * 1.4 / 2,
             'bottom': menuOneY + this._menuItemsFontSize * 1.4 / 2
         };
-    }
-
-    keyDown(key, changeState) {
-        if (key === 'Enter') {
-            changeState(new MenuState());
-        }
     }
 
     click(x, y, changeState) {

@@ -1,7 +1,8 @@
 import {
     cellSize,
     centeringShiftX,
-    centeringShiftY
+    centeringShiftY,
+    fillRect
 } from './drawingHelpers.js';
 
 /*
@@ -62,12 +63,8 @@ export default class Apple {
     }
 
     draw(ctx) {
-        ctx.fillStyle = this._color;
         const pixelX = centeringShiftX + this._x * cellSize;
         const pixelY = centeringShiftY + this._y * cellSize;
-
-        ctx.beginPath();
-        ctx.rect(pixelX, pixelY, cellSize - 1, cellSize - 1);
-        ctx.fill();
+        fillRect(ctx, pixelX, pixelY, cellSize - 1, cellSize - 1, this._color);
     }
 }

@@ -1,7 +1,8 @@
 import {
     cellSize,
     centeringShiftX,
-    centeringShiftY
+    centeringShiftY,
+    fillRect
 } from './drawingHelpers.js';
 
 export default class Field {
@@ -27,15 +28,11 @@ export default class Field {
     }
 
     draw(ctx) {
-        ctx.fillStyle = this._color;
         for (let y = 0; y < this._height; ++y) {
             for (let x = 0; x < this._width; ++x) {
                 const pixelX = centeringShiftX + x * cellSize;
                 const pixelY = centeringShiftY + y * cellSize;
-
-                ctx.beginPath();
-                ctx.rect(pixelX, pixelY, cellSize - 1, cellSize - 1);
-                ctx.fill();
+                fillRect(ctx, pixelX, pixelY, cellSize - 1, cellSize - 1, this._color);
             }
         }
     }
