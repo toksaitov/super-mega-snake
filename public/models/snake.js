@@ -1,30 +1,24 @@
-import {
-    cellSize,
-    centeringShiftX,
-    centeringShiftY,
-    fillRect
-} from './drawingHelpers.js';
-
 export default class Snake {
     // Snake's Behaviour
-    constructor(params, initialLength = 5) {
+    constructor(params, onDeadCallback) {
         // Snake's State
-        this._normalColor = params.color || 'blue';
+        this._normalColor = params.color || 'red';
         this._deadColor = 'gray';
 
         this._name = params.name || 'Snake';
         this._head = 0;
         this._dx = params.dx || 1;
         this._dy = params.dy || 0;
+        this._prevDX = this._dx;
+        this._prevDY = this._dy;
         this._dead = false;
         this._score = 0;
-        this._speed = 52; // [1..60]
+        this._speed = 55; // [1..60]
         this._moveRequest = 0;
         this._moveRequestDiv = Math.max(60 - this._speed, 1);
         this._color = this._normalColor;
-        this._scoreFont = 'sans-serif';
-        this._scoreColor = 'white';
 
+        const initialLength = params.initialLength || 20;
         this._body = [];
         for (let i = 0; i < initialLength; i++) {
             this._body.push({
@@ -32,14 +26,44 @@ export default class Snake {
                 'y': params.y || 0
              });
         }
+
+        this._onDeadCallback = onDeadCallback;
     }
 
     get name() {
         return this._name;
     }
 
+    get head() {
+        return this._head;
+    }
+
+    get dx() {
+        return this._dx;
+    }
+
+    get dy() {
+        return this._dy;
+    }
+
+    get prevDX() {
+        return this._prevDX;
+    }
+
+    get prevDY() {
+        return this._prevDY;
+    }
+
+    get body() {
+        return this._body;
+    }
+
     get color() {
         return this._normalColor;
+    }
+
+    get score() {
+        return this._score;
     }
 
     get dead() {
@@ -50,6 +74,9 @@ export default class Snake {
         this._dead = value;
         if (this._dead) {
             this._color = this._deadColor;
+            if (this._onDeadCallback) {
+                this._onDeadCallback();
+            }
         } else {
             this._color = this._normalColor;
         }
@@ -101,7 +128,7 @@ export default class Snake {
             if (this === snake) {
                 continue;
             }
-            if (snake.isCollidingWith(x, y)) {
+            if (!snake.dead && snake.isCollidingWith(x, y)) {
                 return snake;
             }
         }
@@ -144,20 +171,23 @@ export default class Snake {
             nextHeadSegment.x = nextX;
             nextHeadSegment.y = nextY;
         }
+
+        this._prevDX = this._dx;
+        this._prevDY = this._dy;
     }
 
-    draw(ctx) {
-        for (const segment of this._body) {
-            const pixelX = centeringShiftX + segment.x * cellSize;
-            const pixelY = centeringShiftY + segment.y * cellSize;
-            fillRect(ctx, pixelX, pixelY, cellSize - 1, cellSize - 1, this._color);
+    serialize() {
+        return {
+            'name': this._name,
+            'head': this._head,
+            'dx': this._dx,
+            'dy': this._dy,
+            'prevDX': this._prevDX,
+            'prevDY': this._prevDY,
+            'dead': this._dead,
+            'score': this._score,
+            'color': this._color,
+            'body': this._body
         }
-    }
-
-    drawScore(ctx, x, y) {
-        ctx.fillStyle = this._scoreColor;
-        ctx.textAlign = 'center';
-        ctx.font = `${cellSize * 3.4}px ${this._scoreFont}`;
-        ctx.fillText(this._score, x, y);
     }
 }

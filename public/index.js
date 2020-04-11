@@ -1,4 +1,4 @@
-import MenuState from './menuState.js';
+import MenuState from './state/menuState.js';
 
 let currentState = new MenuState();
 

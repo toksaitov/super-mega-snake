@@ -2,63 +2,22 @@ import {
     recalcDrawingSizes,
     centeringShiftX,
     fieldPixelWidth
-} from './drawingHelpers.js';
+} from '../../utilities/drawingHelpers.js';
 
-import Field from './field.js';
-import Apple from './apple.js';
-import Snake from './snake.js';
+import Field from '../../models/field.js';
+import Apple from '../../models/apple.js';
+import Snake from '../../models/snake.js';
 
-import State from './state.js';
-import PauseState from './pauseState.js';
-import LostState from './lostState.js';
-import WonState from './wonState.js';
+import FieldView from '../../views/fieldView.js';
+import AppleView from '../../views/appleView.js';
+import SnakeView from '../../views/snakeView.js';
 
-export class SinglePlayerGameState extends State {
-    constructor() {
-        super({
-            'w': () => this._snake.turnUp(),
-            'a': () => this._snake.turnLeft(),
-            's': () => this._snake.turnDown(),
-            'd': () => this._snake.turnRight(),
-            'escape': changeState => changeState(new PauseState(this))
-        });
+import State from '../state.js';
+import PauseState from '../pauseState.js';
+import LostState from '../lostState.js';
+import WonState from '../wonState.js';
 
-        this._field = new Field();
-        this._snake = new Snake({
-            'x': 0, 'y': 0,
-            'dx': 1, 'dy': 0
-        });
-        this._snakes = [this._snake];
-        this._apple = new Apple(this._field, this._snakes);
-    }
-
-    draw(ctx, w, h, changeState, shouldSimulate) {
-        super.draw(ctx, w, h);
-        recalcDrawingSizes(w, h, this._field);
-    
-        if (shouldSimulate) {
-            this._snake.move(this._field, this._apple, this._snakes, () => {
-                this._apple = new Apple(this._field, this._snakes);
-            });
-
-            if (this._snake.dead) {
-                changeState(new LostState());
-                return;
-            }
-        }
-    
-        this._field.draw(ctx);
-        this._apple.draw(ctx);
-        this._snake.draw(ctx);
-        
-        const topScoreMargin = h * 0.085;
-        this._snake.drawScore(ctx, w / 2, topScoreMargin);
-    }
-
-    click(x, y) {}
-}
-
-export class LocalMultiPlayerGameState extends State {
+export default class LocalMultiPlayerGameState extends State {
     constructor() {
         super({
             'w': () => this._snake1.turnUp(),
@@ -98,6 +57,9 @@ export class LocalMultiPlayerGameState extends State {
         if (shouldSimulate) {
             const onHaveEatenApple = () => {
                 this._apple = new Apple(this._field, this._snakes);
+
+                const pickupAppleSound = document.getElementById('pickupAppleSound');
+                pickupAppleSound.play();
             }
             this._snake1.move(this._field, this._apple, this._snakes, onHaveEatenApple);
             this._snake2.move(this._field, this._apple, this._snakes, onHaveEatenApple);
@@ -110,22 +72,21 @@ export class LocalMultiPlayerGameState extends State {
                 const winnerName = aliveSnakes[0].name;
                 const winnerColor = aliveSnakes[0].color;
                 changeState(new WonState(winnerName, winnerColor));
-                return;
             } else if (aliveSnakes.length < 1) {
                 changeState(new LostState());
             }
         }
 
-        this._field.draw(ctx);
-        this._apple.draw(ctx);
-        this._snake1.draw(ctx);
-        this._snake2.draw(ctx);
+        FieldView.draw(ctx, this._field);
+        AppleView.draw(ctx, this._apple);
+        SnakeView.draw(ctx, this._snake1);
+        SnakeView.draw(ctx, this._snake2);
         
         const topScoreMargin = h * 0.085;
         const leftScoreMargin = centeringShiftX + w * 0.01;
         const rightScoreMargin = centeringShiftX + fieldPixelWidth - w * 0.01;
-        this._snake1.drawScore(ctx, leftScoreMargin, topScoreMargin);
-        this._snake2.drawScore(ctx, rightScoreMargin, topScoreMargin);    
+        SnakeView.drawScore(ctx, leftScoreMargin, topScoreMargin, this._snake1);
+        SnakeView.drawScore(ctx, rightScoreMargin, topScoreMargin, this._snake2);
     }
 
     click(x, y) {}

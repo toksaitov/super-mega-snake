@@ -1,0 +1,6 @@
+version: "2"
+
+services:
+    super-mega-snake:
+        volumes:
+            - ".:/super-mega-snake"

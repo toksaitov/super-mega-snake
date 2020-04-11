@@ -1,0 +1,12 @@
+version: "2"
+
+services:
+    super-mega-snake:
+        build:
+            context: "."
+            args:
+                PORT: "${PORT}"
+        image: "toksaitov/super-mega-snake"
+        ports:
+            - "${PORT}:${PORT}"
+        env_file: ".env"

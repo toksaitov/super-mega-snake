@@ -1,6 +1,6 @@
 import {
     clearScreen
-} from './drawingHelpers.js';
+} from '../utilities/drawingHelpers.js';
 
 import State from './state.js';
 

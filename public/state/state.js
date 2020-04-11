@@ -1,6 +1,6 @@
 import {
     clearScreen
-} from './drawingHelpers.js';
+} from '../utilities/drawingHelpers.js';
 
 export default class State {
     constructor(keyMappings) {
@@ -9,7 +9,6 @@ export default class State {
 
     draw(ctx, w, h) {
         clearScreen(ctx, w, h);
-
     }
 
     keyDown(key, changeState) {

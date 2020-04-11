@@ -1,0 +1,31 @@
+{
+  "name": "super-mega-snake",
+  "version": "0.0.1",
+  "description": "Super-mega-snake is a multiplayer snake game clone.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/toksaitov/super-mega-snake.git"
+  },
+  "keywords": [
+    "Snake",
+    "socket.io",
+    "express"
+  ],
+  "author": "Toksaitov Dmitrii Alexandrovich <dmitrii@toksaitov.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/toksaitov/super-mega-snake/issues"
+  },
+  "homepage": "https://github.com/toksaitov/super-mega-snake#readme",
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "socket.io": "^2.3.0"
+  },
+  "type": "module"
+}
