@@ -1,4 +1,4 @@
-FROM node:13.12.0-buster
+FROM node:18-alpine
 
 ARG PORT=8080
 

@@ -1,0 +1,36 @@
+module.exports = {
+  env: {
+    browser: true,
+    es2021: true,
+    node: true,
+  },
+  extends: 'airbnb-base',
+  overrides: [
+  ],
+  parserOptions: {
+    ecmaVersion: 'latest',
+    sourceType: 'module',
+  },
+  rules: {
+    'arrow-parens': 'off',
+    'class-methods-use-this': 'off',
+    'import/extensions': 'off',
+    'import/no-cycle': 'off',
+    'import/prefer-default-export': 'off',
+    'key-spacing': 'off',
+    'lines-between-class-members': 'off',
+    'no-console': 'off',
+    'no-multi-assign': 'off',
+    'no-multi-spaces': 'off',
+    'no-param-reassign': 'off',
+    'no-plusplus': 'off',
+    'no-restricted-syntax': 'off',
+    'no-return-assign': 'off',
+    'no-underscore-dangle': 'off',
+    'object-curly-newline': 'off',
+    'object-property-newline': 'off',
+    'operator-linebreak': 'off',
+    'prefer-destructuring': 'off',
+    'quote-props': 'off',
+  },
+};
